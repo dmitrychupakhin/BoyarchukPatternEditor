@@ -71,6 +71,11 @@ namespace BoyarchukPatternEditor {
 			}
 			try
 			{
+				//XmlWriterSettings^ settings = gcnew XmlWriterSettings();
+				//settings->Encoding = System::Text::Encoding::UTF8;
+				//XmlWriter^ writer = XmlWriter::Create(path, settings);
+				//xmlDoc->Save(writer);
+				//writer->Close();
 				xmlDoc->Save(path);
 				MessageBox::Show("XML файл успешно сохранен по пути: " + path, "Успех", MessageBoxButtons::OK, MessageBoxIcon::Information);
 			}
@@ -100,7 +105,7 @@ namespace BoyarchukPatternEditor {
 					// Получаем значения из дочерних элементов
 					String^ Color = elementNode->SelectSingleNode("Color")->InnerText;
 
-					XmlNodeList^ pointsNodes = elementNode->SelectNodes("/Elements/PenElement/Point");
+					XmlNodeList^ pointsNodes = elementNode->SelectNodes("Point");
 
 					PenElement^ newPenElement = gcnew PenElement(Color::FromName((Color)));
 
@@ -122,13 +127,18 @@ namespace BoyarchukPatternEditor {
 					String^ Color = elementNode->SelectSingleNode("Color")->InnerText;
 					String^ Data = elementNode->SelectSingleNode("Data")->InnerText;
 
-					XmlNode^ pointNode = elementNode->SelectNodes("/Elements/TextElement/Point")[0];
+					XmlNode^ pointNode = elementNode->SelectNodes("Point")[0];
 
 					String^ X = pointNode->SelectSingleNode("X")->InnerText;
 					String^ Y = pointNode->SelectSingleNode("Y")->InnerText;
-
-					unsigned int argbValue = Convert::ToUInt32(Color, 16);
-					TextElement^ newTextElement = gcnew TextElement(Color::FromArgb(argbValue));
+					TextElement^ newTextElement;
+					try {
+						unsigned int argbValue = Convert::ToUInt32(Color, 16);
+						newTextElement = gcnew TextElement(Color::FromArgb(argbValue));
+					}
+					catch (...) {
+						newTextElement = gcnew TextElement(Color::FromName(Color));
+					}
 					newTextElement->SetData(Data);
 					newTextElement->SetPoint(Point(System::Convert::ToInt32(X), System::Convert::ToInt32(Y)));
 					graphicElements->Add(newTextElement);
