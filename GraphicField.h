@@ -107,7 +107,17 @@ namespace BoyarchukPatternEditor {
 
 					XmlNodeList^ pointsNodes = elementNode->SelectNodes("Point");
 
-					PenElement^ newPenElement = gcnew PenElement(Color::FromName((Color)));
+					PenElement^ newPenElement;
+
+					try {
+						unsigned int argbValue = Convert::ToUInt32(Color, 16);
+						newPenElement = gcnew PenElement(Color::FromArgb(argbValue));
+					}
+					catch (...) {
+						newPenElement = gcnew PenElement(Color::FromName(Color));
+					}
+
+					
 
 					for each (XmlNode ^ pointNode in pointsNodes)
 					{
